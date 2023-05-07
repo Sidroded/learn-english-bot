@@ -1,6 +1,8 @@
 package com.sidroded.learnenglishbot.bot;
 
+import com.sidroded.learnenglishbot.bot.commands.StartCommand;
 import com.sidroded.learnenglishbot.bot.config.BotConfig;
+import com.sidroded.learnenglishbot.database.ConnectionService;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -9,7 +11,8 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 @Component
 public class TelegramBot extends TelegramLongPollingBot {
-    final BotConfig config;
+    private final BotConfig config;
+    private final ConnectionService connectionService = new ConnectionService();
 
     public TelegramBot(BotConfig config) {
         this.config = config;
@@ -32,7 +35,18 @@ public class TelegramBot extends TelegramLongPollingBot {
         String text = update.getMessage().getText();
 
         switch (text) {
-            case "/start": sendMessage("Hi", chatId);
+            case "/start": startCommandReceived(chatId, userName);
+        }
+    }
+
+    private void startCommandReceived(String chatId, String name) {
+        StartCommand startCommand = new StartCommand();
+        connectionService.addUser(chatId, name);
+
+        try {
+            execute(startCommand.getMessage(chatId, name));
+        } catch (TelegramApiException e) {
+            throw new RuntimeException(e);
         }
     }
 
