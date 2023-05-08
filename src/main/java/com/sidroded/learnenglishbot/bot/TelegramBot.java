@@ -3,6 +3,7 @@ package com.sidroded.learnenglishbot.bot;
 import com.sidroded.learnenglishbot.bot.commands.StartCommand;
 import com.sidroded.learnenglishbot.bot.config.BotConfig;
 import com.sidroded.learnenglishbot.database.ConnectionService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -10,13 +11,10 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 @Component
+@RequiredArgsConstructor
 public class TelegramBot extends TelegramLongPollingBot {
     private final BotConfig config;
-    private final ConnectionService connectionService = new ConnectionService();
-
-    public TelegramBot(BotConfig config) {
-        this.config = config;
-    }
+    private final ConnectionService connectionService;
 
     @Override
     public String getBotUsername() {

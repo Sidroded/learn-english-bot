@@ -1,17 +1,20 @@
 package com.sidroded.learnenglishbot.database;
 
-import com.sidroded.learnenglishbot.bot.TelegramBot;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+@Component
+@RequiredArgsConstructor
 public class ConnectionService {
-    private final Connection connection = new DatabaseConnection().getConnection();
+    private final DatabaseConnection databaseConnection;
 
     public void addUser(String chatId, String name) {
-        try {
+        try (Connection connection = databaseConnection.getConnection()) {
             String selectQuery = "SELECT * FROM users WHERE chatId = ?";
             PreparedStatement selectStatement = connection.prepareStatement(selectQuery);
             selectStatement.setString(1, chatId);
