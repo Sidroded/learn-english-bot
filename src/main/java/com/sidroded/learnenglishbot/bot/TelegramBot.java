@@ -1,6 +1,12 @@
 package com.sidroded.learnenglishbot.bot;
 
+import com.sidroded.learnenglishbot.bot.commands.AddWordCommand;
+import com.sidroded.learnenglishbot.bot.commands.StartCommand;
 import com.sidroded.learnenglishbot.bot.config.BotConfig;
+import com.sidroded.learnenglishbot.bot.constant.KeyboardText;
+import com.sidroded.learnenglishbot.database.service.UserService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -8,21 +14,24 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 @Component
+@RequiredArgsConstructor
 public class TelegramBot extends TelegramLongPollingBot {
-    final BotConfig config;
+    private final BotConfig botConfig;
+    private final StartCommand startCommand = new StartCommand();
+    private final AddWordCommand addWordCommand = new AddWordCommand();
 
-    public TelegramBot(BotConfig config) {
-        this.config = config;
-    }
+
+    @Autowired
+    private UserService userService;
 
     @Override
     public String getBotUsername() {
-        return config.getBotName();
+        return botConfig.getBotName();
     }
 
     @Override
     public String getBotToken() {
-        return config.getToken();
+        return botConfig.getToken();
     }
 
     @Override
@@ -32,7 +41,37 @@ public class TelegramBot extends TelegramLongPollingBot {
         String text = update.getMessage().getText();
 
         switch (text) {
-            case "/start": sendMessage("Hi", chatId);
+            case "/start" -> startCommandReceived(chatId, userName);
+            case KeyboardText.START_KEYBOARD_ADD_NEW_WORD -> addWordStartCommandReceived(chatId);
+            default -> {
+
+            }
+        }
+    }
+
+    private void startCommandReceived(String chatId, String name) {
+        userService.addUser(chatId, name);
+
+        try {
+            execute(startCommand.getMessage(chatId, name));
+        } catch (TelegramApiException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void addWordStartCommandReceived(String chatId) {
+        try {
+            execute(addWordCommand.getStartMessage(chatId));
+        } catch (TelegramApiException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void addWordConfirmCommandReceived(String chatId, String text) {
+        try {
+            execute(addWordCommand.getConfirmMessage(chatId, text));
+        } catch (TelegramApiException e) {
+            throw new RuntimeException(e);
         }
     }
 
