@@ -5,4 +5,7 @@ public class MessageText {
             "анлгійську або будь яку іншу мову.";
 
     public static final String ADD_MESSAGE_START_TEXT = "Будь-ласка додайте пару слів за прикладом: слово - переклад";
+    public static final String ADD_MESSAGE_CONFIRM_TEXT = "Зберегти переклад: %s?";
+    public static final String ADD_MESSAGE_WARING_TEXT = "Невірний формат вводу. Будь-ласка введіть пару слів за прикладом: " +
+            "слово - переклад";
 }

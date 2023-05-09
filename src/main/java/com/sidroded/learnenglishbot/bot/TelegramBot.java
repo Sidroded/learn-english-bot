@@ -41,8 +41,11 @@ public class TelegramBot extends TelegramLongPollingBot {
         String text = update.getMessage().getText();
 
         switch (text) {
-            case "/start": startCommandReceived(chatId, userName);
-            case KeyboardText.START_KEYBOARD_ADD_NEW_WORD: addWordCommandReceived(chatId);
+            case "/start" -> startCommandReceived(chatId, userName);
+            case KeyboardText.START_KEYBOARD_ADD_NEW_WORD -> addWordStartCommandReceived(chatId);
+            default -> {
+
+            }
         }
     }
 
@@ -56,9 +59,17 @@ public class TelegramBot extends TelegramLongPollingBot {
         }
     }
 
-    private void addWordCommandReceived(String chatId) {
+    private void addWordStartCommandReceived(String chatId) {
         try {
             execute(addWordCommand.getStartMessage(chatId));
+        } catch (TelegramApiException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void addWordConfirmCommandReceived(String chatId, String text) {
+        try {
+            execute(addWordCommand.getConfirmMessage(chatId, text));
         } catch (TelegramApiException e) {
             throw new RuntimeException(e);
         }

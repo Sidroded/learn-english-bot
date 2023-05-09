@@ -22,4 +22,7 @@ public class User {
 
     @Column(name = "name")
     private String name;
+
+    @Column(name = "is_set_word")
+    private boolean isSetWord;
 }

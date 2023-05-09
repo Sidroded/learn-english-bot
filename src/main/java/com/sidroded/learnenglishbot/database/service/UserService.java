@@ -18,7 +18,7 @@ public class UserService {
     private UserRepository userRepository;
 
     public void addUser(String chatId, String name) {
-        User user = new User(chatId, name);
+        User user = new User(chatId, name, false);
         if (userRepository.existsById(chatId))
             userRepository.save(user);
     }
