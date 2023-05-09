@@ -24,5 +24,5 @@ public class User {
     private String name;
 
     @Column(name = "is_set_word")
-    private boolean isSetWord;
+    private Boolean isSetWord;
 }
