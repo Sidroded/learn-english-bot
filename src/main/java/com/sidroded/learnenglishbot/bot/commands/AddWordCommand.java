@@ -27,18 +27,26 @@ public class AddWordCommand {
         return message;
     }
 
+    public SendMessage getWrongInputDataMessage(String chatId) {
+        SendMessage message = new SendMessage();
+        message.setChatId(chatId);
+        message.setText(MessageText.ADD_MESSAGE_WARING_TEXT);
+        return message;
+    }
+
     private InlineKeyboardMarkup confirmKeyboard() {
         InlineKeyboardMarkup keyboardMarkup = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> rows = new ArrayList<>();
         List<InlineKeyboardButton> row = new ArrayList<>();
+
         InlineKeyboardButton YES_BUTTON = new InlineKeyboardButton();
         YES_BUTTON.setCallbackData(ButtonId.CONFIRM_BUTTON_YES);
         YES_BUTTON.setText(ButtonText.ADD_TEXT_CONFIRM_BUTTON);
         row.add(YES_BUTTON);
 
         InlineKeyboardButton NO_BUTTON = new InlineKeyboardButton();
-        YES_BUTTON.setCallbackData(ButtonId.CONFIRM_BUTTON_NO);
-        YES_BUTTON.setText(ButtonText.ADD_TEXT_CANCEL_BUTTON);
+        NO_BUTTON.setCallbackData(ButtonId.CONFIRM_BUTTON_NO);
+        NO_BUTTON.setText(ButtonText.ADD_TEXT_CANCEL_BUTTON);
         row.add(NO_BUTTON);
 
         rows.add(row);

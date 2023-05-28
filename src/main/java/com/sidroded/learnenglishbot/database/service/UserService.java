@@ -19,11 +19,23 @@ public class UserService {
 
     public void addUser(String chatId, String name) {
         User user = new User(chatId, name, false);
-        if (userRepository.existsById(chatId))
+        if (!userRepository.existsById(chatId))
             userRepository.save(user);
     }
 
-    public Optional<User> getUser(String chatId) {
-        return userRepository.findById(chatId);
+    public User getUser(String chatId) {
+        Optional<User> optionalUser = userRepository.findById(chatId);
+        return optionalUser.get();
+    }
+
+    public void setIsAddWord(String chatId, Boolean isAddWord) {
+        User user = getUser(chatId);
+        user.setIsSetWord(isAddWord);
+        userRepository.save(user);
+    }
+
+    public boolean isAddWord(String chatId) {
+        User user = getUser(chatId);
+        return user.getIsSetWord();
     }
 }

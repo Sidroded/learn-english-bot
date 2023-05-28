@@ -5,6 +5,7 @@ import com.sidroded.learnenglishbot.bot.commands.StartCommand;
 import com.sidroded.learnenglishbot.bot.config.BotConfig;
 import com.sidroded.learnenglishbot.bot.constant.KeyboardText;
 import com.sidroded.learnenglishbot.database.service.UserService;
+import com.sidroded.learnenglishbot.utils.DictionaryUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -19,6 +20,7 @@ public class TelegramBot extends TelegramLongPollingBot {
     private final BotConfig botConfig;
     private final StartCommand startCommand = new StartCommand();
     private final AddWordCommand addWordCommand = new AddWordCommand();
+    private final DictionaryUtils dictionaryUtils = new DictionaryUtils();
 
 
     @Autowired
@@ -44,7 +46,9 @@ public class TelegramBot extends TelegramLongPollingBot {
             case "/start" -> startCommandReceived(chatId, userName);
             case KeyboardText.START_KEYBOARD_ADD_NEW_WORD -> addWordStartCommandReceived(chatId);
             default -> {
-
+                if (userService.isAddWord(chatId)) {
+                    addWordConfirmCommandReceived(chatId, text);
+                }
             }
         }
     }
@@ -60,6 +64,8 @@ public class TelegramBot extends TelegramLongPollingBot {
     }
 
     private void addWordStartCommandReceived(String chatId) {
+        userService.setIsAddWord(chatId, true);
+
         try {
             execute(addWordCommand.getStartMessage(chatId));
         } catch (TelegramApiException e) {
@@ -69,7 +75,11 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     private void addWordConfirmCommandReceived(String chatId, String text) {
         try {
-            execute(addWordCommand.getConfirmMessage(chatId, text));
+            if (dictionaryUtils.isWordTranslationPattern(text)) {
+                execute(addWordCommand.getConfirmMessage(chatId, text));
+            } else {
+                execute(addWordCommand.getWrongInputDataMessage(chatId));
+            }
         } catch (TelegramApiException e) {
             throw new RuntimeException(e);
         }
